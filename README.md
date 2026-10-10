@@ -1,4 +1,4 @@
-# VORTEX — Creative Digital Agency Landing Page
+ Creative Digital Agency Landing Page
 
 An Awwwards-quality creative agency landing page built with Next.js 15, GSAP animations, Lenis smooth scroll, and Tailwind CSS v4. Features kinetic typography, horizontal scroll showcase, custom cursor system, and scroll-driven effects.
 
