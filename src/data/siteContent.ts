@@ -341,8 +341,6 @@ export const SITE_CONTENT = {
     social: {
       instagram: "", // PLACEHOLDER
       linkedin: "", // PLACEHOLDER
-      twitter: "", // PLACEHOLDER
-      github: "", // PLACEHOLDER
     },
   } as ContactInfo,
 
