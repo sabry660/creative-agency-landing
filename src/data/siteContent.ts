@@ -340,6 +340,8 @@ export const SITE_CONTENT = {
     email: "", // PLACEHOLDER - Add email address
     social: {
       instagram: "", // PLACEHOLDER
+      facebook: "", // PLACEHOLDER
+      whatsapp: "", // PLACEHOLDER
       linkedin: "", // PLACEHOLDER
     },
   } as ContactInfo,
