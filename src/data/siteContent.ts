@@ -336,7 +336,7 @@ export const SITE_CONTENT = {
   },
 
   contact: {
-    whatsapp: "201234567890", // PLACEHOLDER - Add WhatsApp number (format: country code + number, no + or spaces)
+    whatsapp: "201201289813", // Phone number in international format without '+' or spaces
     email: "", // PLACEHOLDER - Add email address
     social: {
       instagram: "", // PLACEHOLDER
