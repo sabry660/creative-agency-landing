@@ -40,6 +40,7 @@ export interface ContactInfo {
     linkedin?: string;
     twitter?: string;
     github?: string;
+    facebook?: string;
   };
 }
 
@@ -68,15 +69,15 @@ export interface FAQ {
 
 export const SITE_CONTENT = {
   brand: {
-    name: "Sabry",
-    tagline: "Premium landing page studio",
+    name: "Montra",
+    tagline: "Creative growth studio",
     hero: {
-      eyebrow: "INDEPENDENT DIGITAL STUDIO",
-      headline: "Digital experiences built to make your brand stand out.",
+      eyebrow: "CREATIVE GROWTH STUDIO",
+      headline: "Digital experiences built to grow your brand.",
       supportingText:
         "We create distinctive landing pages with thoughtful design, purposeful motion, and carefully crafted interactions.",
       primaryCta: "Explore Our Work",
-      secondaryCta: "Start a Project",
+      secondaryCta: "Get a Quote",
     },
     description:
       "A premium creative studio specializing in conversion-focused landing pages with optional custom motion and 3D experiences.",
@@ -87,8 +88,8 @@ export const SITE_CONTENT = {
     { label: "Work", href: "#work" },
     { label: "Services", href: "#services" },
     { label: "Pricing", href: "#pricing" },
-    { label: "Templates", href: "#templates" },
     { label: "Process", href: "#process" },
+    { label: "Privacy", href: "#privacy-policy" },
     { label: "Contact", href: "#contact" },
   ] as NavLink[],
 
@@ -162,7 +163,6 @@ export const SITE_CONTENT = {
         "2 revision rounds",
       ],
       exclusions: [
-        "Custom 3D",
         "Advanced motion",
         "Multiple pages",
         "Source code templates",
@@ -194,7 +194,6 @@ export const SITE_CONTENT = {
         "3 revision rounds",
       ],
       exclusions: [
-        "Custom 3D",
         "Advanced motion",
         "Multiple pages",
       ],
@@ -225,7 +224,6 @@ export const SITE_CONTENT = {
         "4 revision rounds",
       ],
       exclusions: [
-        "Custom 3D (available as add-on)",
         "Multiple pages (available as add-on)",
       ],
       ctaLabel: "Get Started",
@@ -289,12 +287,11 @@ export const SITE_CONTENT = {
       pricingModel: "fixed",
     },
     {
-      id: "custom-3d",
-      name: "Custom 3D development",
-      description: "Custom 3D creation — final price based on scope",
-      price: 2000,
-      pricingModel: "starting",
-      notes: "Final price confirmed based on scope",
+      id: "figma-uiux",
+      name: "Figma UI/UX design file",
+      description: "Design file delivered in Figma",
+      price: 300,
+      pricingModel: "fixed",
     },
     {
       id: "additional-page",
@@ -312,11 +309,10 @@ export const SITE_CONTENT = {
     },
     {
       id: "api-integration",
-      name: "Simple booking/API integration",
-      description: "Basic integration — confirm scope",
-      price: 500,
-      pricingModel: "starting",
-      notes: "Final price confirmed based on scope",
+      name: "API integration",
+      description: "Basic connection or booking integration",
+      price: 600,
+      pricingModel: "fixed",
     },
     {
       id: "rush-delivery",
@@ -387,7 +383,7 @@ export const SITE_CONTENT = {
 
   domainHosting: {
     note: "Customers purchase and manage their own domain and hosting.",
-    handoff: "Sabry delivers website files and provides guidance on deployment.",
+    handoff: "Montra delivers website files and provides guidance on deployment.",
     costsSeparate: true,
   },
 
@@ -400,7 +396,7 @@ export const SITE_CONTENT = {
     {
       question: "Can I request custom animations or 3D?",
       answer:
-        "Yes, custom animations and 3D are available as add-ons. Advanced GSAP motion and 3D model integration are offered as separate options. Custom 3D development is available starting at EGP 2,000, with final pricing based on scope.",
+        "Yes. Advanced motion and 3D model integration can be added as project-specific options, depending on the scope and assets involved.",
     },
     {
       question: "What is the difference between a template and a custom landing page?",
@@ -410,7 +406,7 @@ export const SITE_CONTENT = {
     {
       question: "Do I need to purchase my own domain and hosting?",
       answer:
-        "Yes. You are responsible for purchasing and managing your domain name and hosting. Sabry delivers the website files and provides guidance on deployment, but domain and hosting costs are separate.",
+        "Yes. You are responsible for purchasing and managing your domain name and hosting. Montra delivers the website files and provides guidance on deployment, but domain and hosting costs are separate.",
     },
     {
       question: "Will I receive the source code?",
@@ -428,23 +424,25 @@ export const SITE_CONTENT = {
         "Yes. Additional pages and additional languages are available as add-ons. See the Add-ons section for pricing.",
     },
     {
-      question: "How is the final price confirmed?",
+      question: "How are custom additions priced?",
       answer:
-        "The estimate from the pricing calculator is indicative. The final price is confirmed after reviewing your project requirements, scope, and any custom requests. For add-ons marked as 'starting price,' the final amount will be confirmed based on the actual work required.",
+        "The pricing calculator provides an estimate based on the selected package and add-ons. Any scope-specific adjustments are reviewed before approval so the estimate reflects the project accurately.",
     },
   ] as FAQ[],
 
   pwa: {
-    name: "Sabry",
-    shortName: "Sabry",
+    name: "Montra",
+    shortName: "Montra",
     description:
-      "Premium landing page studio creating distinctive digital experiences.",
+      "Creative growth studio creating distinctive digital experiences.",
     themeColor: "#ff4d00",
     backgroundColor: "#0a0a0a",
-    // Icons to be added when created
     icons: {
+      icon180: "/icons/icon-180.png",
       icon192: "/icons/icon-192.png",
       icon512: "/icons/icon-512.png",
+      maskable512: "/icons/maskable-512.png",
+      appleTouch: "/icons/apple-touch-icon.png",
     },
     offlineFallback: "/offline",
   },

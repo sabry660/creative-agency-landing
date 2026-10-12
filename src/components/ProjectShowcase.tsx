@@ -130,7 +130,7 @@ export default function ProjectShowcase() {
   }, []);
 
   return (
-    <section ref={sectionRef} id="work" className="relative overflow-hidden pt-16 md:pt-24">
+    <section ref={sectionRef} id="work" className="relative overflow-hidden pt-16 md:pt-24" suppressHydrationWarning>
       {/* Section header — visible on all sizes */}
       <div className="mx-auto max-w-7xl px-6 pb-12 lg:px-8">
         <p

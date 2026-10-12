@@ -8,7 +8,7 @@ export default function OfflinePage() {
           You&apos;re Offline
         </h1>
         <p className="mb-8 text-text/60">
-          Please check your internet connection and try again.
+          Montra is temporarily unavailable without an internet connection. Please reconnect and try again.
         </p>
         <button
           onClick={() => window.location.reload()}

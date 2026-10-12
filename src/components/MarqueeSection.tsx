@@ -77,7 +77,7 @@ function MarqueeRow({
 
 export default function MarqueeSection() {
   return (
-    <section className="skew-section overflow-hidden py-16 md:py-24">
+    <section className="skew-section overflow-hidden py-16 md:py-24" suppressHydrationWarning>
       <MarqueeRow items={ROW_1} direction="left" />
       <MarqueeRow items={ROW_2} direction="right" />
     </section>

@@ -1,16 +1,58 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { SITE_CONTENT } from "@/data/siteContent";
 import { ArrowRight, MessageCircle } from "lucide-react";
 
+const STORAGE_KEY = "montra-contact-form";
+
+const formatValue = (value: string | undefined, fallback = "Not provided") => {
+  const cleaned = value?.trim();
+  return cleaned ? cleaned : fallback;
+};
+
+const safeReadFromStorage = () => {
+  if (typeof window === "undefined" || !window.sessionStorage) return null;
+
+  try {
+    const raw = window.sessionStorage.getItem(STORAGE_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+};
+
+const safeWriteToStorage = (value: Record<string, string>) => {
+  if (typeof window === "undefined" || !window.sessionStorage) return;
+
+  try {
+    window.sessionStorage.setItem(STORAGE_KEY, JSON.stringify(value));
+  } catch {
+    // Ignore storage errors to keep the form usable without breaking submission.
+  }
+};
+
 export default function ContactSection() {
-  const [formData, setFormData] = useState({
-    name: "",
-    brandName: "",
-    inquiryType: "",
-    description: "",
+  const [formData, setFormData] = useState(() => {
+    const savedValues = safeReadFromStorage();
+
+    return {
+      name: savedValues?.name ?? "",
+      brandName: savedValues?.brandName ?? "",
+      inquiryType: savedValues?.inquiryType ?? "",
+      description: savedValues?.description ?? "",
+    };
   });
+  const [isHydrated, setIsHydrated] = useState(false);
+
+  useEffect(() => {
+    setIsHydrated(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isHydrated) return;
+    safeWriteToStorage(formData);
+  }, [formData, isHydrated]);
 
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -37,41 +79,65 @@ export default function ContactSection() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = (event: React.FormEvent) => {
+    event.preventDefault();
 
     if (!validateForm()) return;
 
-    // Construct WhatsApp message
-    const message = `
-Name: ${formData.name}
-Brand Name: ${formData.brandName}
-Inquiry Type: ${formData.inquiryType}
-Description: ${formData.description}
-    `.trim();
+    const message = [
+      "Hello Mohamed Sabry,",
+      "",
+      `My name is ${formatValue(formData.name)}, and I’m reaching out regarding a project for ${formatValue(formData.brandName)}.`,
+      "",
+      `Service Required: ${formatValue(formData.inquiryType)}`,
+      "",
+      "Project Details:",
+      formatValue(formData.description),
+      "",
+      "I’d love to discuss the requirements and explore how Montra can help bring this project to life.",
+      "",
+      "Looking forward to hearing from you.",
+      "",
+      "Best regards,",
+      formatValue(formData.name),
+    ].join("\n");
 
-    // PLACEHOLDER: Replace with actual WhatsApp number
     const whatsappNumber = SITE_CONTENT.contact.whatsapp || "";
 
     if (whatsappNumber) {
       const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
-      window.open(whatsappUrl, "_blank");
+      window.open(whatsappUrl, "_blank", "noopener,noreferrer");
     } else {
-      alert("WhatsApp number not configured. Please add it to SITE_CONTENT.md");
+      alert("WhatsApp number not configured.");
+    }
+  };
+
+  const handleReset = () => {
+    setFormData({
+      name: "",
+      brandName: "",
+      inquiryType: "",
+      description: "",
+    });
+
+    try {
+      sessionStorage.removeItem(STORAGE_KEY);
+    } catch {
+      // Ignore storage errors.
     }
   };
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-    // Clear error for this field
+    const { name, value } = event.target;
+    setFormData((previous) => ({ ...previous, [name]: value }));
+
     if (errors[name]) {
-      setErrors((prev) => {
-        const newErrors = { ...prev };
-        delete newErrors[name];
-        return newErrors;
+      setErrors((previous) => {
+        const nextErrors = { ...previous };
+        delete nextErrors[name];
+        return nextErrors;
       });
     }
   };
@@ -177,17 +243,20 @@ Description: ${formData.description}
               )}
             </div>
 
-            <button
-              type="submit"
-              className="hero-cta w-full justify-center"
-            >
+            <button type="submit" className="hero-cta w-full justify-center">
               <span>Send via WhatsApp</span>
               <MessageCircle size={16} className="hero-cta-arrow" />
             </button>
 
-            <p className="text-center text-xs text-text/40">
-              Your message will be sent via WhatsApp
-            </p>
+            <button
+              type="button"
+              onClick={handleReset}
+              className="mt-3 w-full border border-white/10 bg-white/[0.02] px-4 py-3 text-sm text-text/70 transition-colors hover:border-accent hover:text-accent"
+            >
+              Reset form
+            </button>
+
+            <p className="text-center text-xs text-text/40">Your message will be sent via WhatsApp</p>
           </form>
         </div>
       </div>

@@ -1,7 +1,7 @@
 {
-  "name": "Sabry",
-  "short_name": "Sabry",
-  "description": "Premium landing page studio creating distinctive digital experiences.",
+  "name": "Montra",
+  "short_name": "Montra",
+  "description": "Creative growth studio creating distinctive digital experiences.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0a0a0a",
@@ -13,13 +13,25 @@
       "src": "/icons/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-180.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
     },
     {
       "src": "/icons/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ]
 }

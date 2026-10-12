@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { SITE_CONTENT } from "@/data/siteContent";
 import { ArrowRight } from "lucide-react";
 
@@ -8,52 +8,116 @@ export default function PricingSection() {
   const [selectedPackage, setSelectedPackage] = useState<string | null>(null);
   const [selectedAddOns, setSelectedAddOns] = useState<Set<string>>(new Set());
 
+  const selectedPackageData = useMemo(
+    () => SITE_CONTENT.packages.find((packageOption) => packageOption.id === selectedPackage) ?? null,
+    [selectedPackage]
+  );
+
+  const selectedAddOnList = useMemo(
+    () => SITE_CONTENT.addOns.filter((addOn) => selectedAddOns.has(addOn.id)),
+    [selectedAddOns]
+  );
+
   const toggleAddOn = (addOnId: string) => {
-    const newSelected = new Set(selectedAddOns);
-    if (newSelected.has(addOnId)) {
-      newSelected.delete(addOnId);
-    } else {
-      newSelected.add(addOnId);
-    }
-    setSelectedAddOns(newSelected);
+    setSelectedAddOns((previous) => {
+      const updated = new Set(previous);
+      if (updated.has(addOnId)) updated.delete(addOnId);
+      else updated.add(addOnId);
+      return updated;
+    });
   };
 
-  const calculateTotal = () => {
-    if (!selectedPackage) return 0;
+  const calculateSubtotal = () => {
+    if (!selectedPackageData) return 0;
 
-    const pkg = SITE_CONTENT.packages.find((p) => p.id === selectedPackage);
-    if (!pkg) return 0;
+    let subtotal = selectedPackageData.price;
 
-    let total = pkg.price;
+    selectedAddOnList.forEach((addOn) => {
+      if (addOn.pricingModel === "fixed") {
+        subtotal += addOn.price;
+      }
 
-    selectedAddOns.forEach((addOnId) => {
-      const addOn = SITE_CONTENT.addOns.find((a) => a.id === addOnId);
-      if (addOn) {
-        if (addOn.pricingModel === "fixed") {
-          total += addOn.price;
-        } else if (addOn.pricingModel === "percentage" && addOn.percentageValue) {
-          // Rush delivery applies to subtotal
-          const subtotal = total;
-          total += subtotal * (addOn.percentageValue / 100);
-        }
-        // "starting" price add-ons are not included in calculation - they require confirmation
+      if (addOn.pricingModel === "percentage" && addOn.percentageValue) {
+        subtotal += subtotal * (addOn.percentageValue / 100);
       }
     });
 
-    return Math.round(total);
+    return Math.round(subtotal);
   };
 
-  const getSelectedAddOns = () => {
-    return SITE_CONTENT.addOns.filter((a) => selectedAddOns.has(a.id));
+  const calculateTotal = () => {
+    if (!selectedPackageData) return 0;
+
+    const fixedAndPercentageTotal = selectedAddOnList.reduce((sum, addOn) => {
+      if (addOn.pricingModel === "fixed") return sum + addOn.price;
+      if (addOn.pricingModel === "percentage" && addOn.percentageValue) {
+        const applicableBase = selectedPackageData.price + sum;
+        return sum + applicableBase * (addOn.percentageValue / 100);
+      }
+      return sum;
+    }, selectedPackageData.price);
+
+    return Math.round(fixedAndPercentageTotal);
+  };
+
+  const getAddOnDisplayValue = (addOn: (typeof SITE_CONTENT.addOns)[number]) => {
+    if (addOn.pricingModel === "percentage") {
+      return `+${addOn.price}%`;
+    }
+
+    if (addOn.pricingModel === "starting") {
+      return `From EGP ${addOn.price.toLocaleString()}`;
+    }
+
+    return `EGP ${addOn.price.toLocaleString()}`;
   };
 
   const handleRequestEstimate = () => {
-    // This would prefill the contact form
-    // For now, scroll to contact
-    const contactSection = document.querySelector("#contact");
-    if (contactSection) {
-      contactSection.scrollIntoView({ behavior: "smooth" });
+    if (!selectedPackageData) {
+      window.alert("Please select a package before requesting an estimate.");
+      return;
     }
+
+    const selectedPackageName = selectedPackageData.name;
+    const packagePrice = selectedPackageData.price;
+    const addOnSummary = selectedAddOnList.length
+      ? selectedAddOnList
+          .map((addOn) => `${addOn.name}: ${getAddOnDisplayValue(addOn)}`)
+          .join("\n")
+      : "No add-ons selected.";
+    const subtotal = calculateSubtotal();
+    const total = calculateTotal();
+    const discount = Math.max(0, subtotal - total);
+
+    const message = [
+      "Hello Mohamed Sabry,",
+      "",
+      "I’d like to request an estimate from Montra.",
+      "",
+      `Selected Package: ${selectedPackageName}`,
+      `Package Price: EGP ${packagePrice.toLocaleString()}`,
+      "",
+      "Selected Add-ons:",
+      addOnSummary,
+      "",
+      `Subtotal: EGP ${subtotal.toLocaleString()}`,
+      `Discount: EGP ${discount.toLocaleString()}`,
+      `Total Estimate: EGP ${total.toLocaleString()}`,
+      "",
+      "I’d like to discuss the details and confirm the next steps.",
+      "",
+      "Best regards,",
+      "Montra",
+    ].join("\n");
+
+    const whatsappNumber = SITE_CONTENT.contact.whatsapp || "";
+    if (!whatsappNumber) {
+      window.alert("WhatsApp number is not configured.");
+      return;
+    }
+
+    const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, "_blank", "noopener,noreferrer");
   };
 
   return (
@@ -78,36 +142,33 @@ export default function PricingSection() {
           </p>
         </div>
 
-        {/* Package Cards */}
-        <div className="mb-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 items-stretch">
+        <div className="mb-16 grid items-stretch gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {SITE_CONTENT.packages.map((pkg) => (
             <div
               key={pkg.id}
-              className={`relative border p-8 transition-all flex flex-col ${
+              className={`relative flex flex-col border p-8 transition-all ${
                 selectedPackage === pkg.id
                   ? "border-accent bg-accent/5"
                   : "border-white/10 bg-white/[0.02] hover:border-white/20"
               }`}
             >
-              <h3
-                className="mb-2 text-2xl font-bold"
-                style={{ fontFamily: "var(--font-heading)" }}
-              >
+              <h3 className="mb-2 text-2xl font-bold" style={{ fontFamily: "var(--font-heading)" }}>
                 {pkg.name}
               </h3>
               <p className="mb-4 text-sm text-text/60">{pkg.description}</p>
               <div className="mb-6">
                 <span className="text-4xl font-bold">EGP {pkg.price.toLocaleString()}</span>
               </div>
-              <ul className="mb-6 space-y-2 text-sm text-text/70 flex-1">
-                {pkg.includedFeatures.map((feature, i) => (
-                  <li key={i} className="flex items-start gap-2">
+              <ul className="mb-6 flex-1 space-y-2 text-sm text-text/70">
+                {pkg.includedFeatures.map((feature, index) => (
+                  <li key={`${pkg.id}-${index}`} className="flex items-start gap-2">
                     <span className="mt-1 text-accent">✓</span>
                     <span>{feature}</span>
                   </li>
                 ))}
               </ul>
               <button
+                type="button"
                 onClick={() => setSelectedPackage(pkg.id)}
                 className={`w-full py-3 font-semibold transition-colors ${
                   selectedPackage === pkg.id
@@ -121,13 +182,9 @@ export default function PricingSection() {
           ))}
         </div>
 
-        {/* Add-on Calculator */}
-        {selectedPackage && (
+        {selectedPackageData && (
           <div className="border border-white/10 bg-white/[0.02] p-8">
-            <h3
-              className="mb-6 text-2xl font-bold"
-              style={{ fontFamily: "var(--font-heading)" }}
-            >
+            <h3 className="mb-6 text-2xl font-bold" style={{ fontFamily: "var(--font-heading)" }}>
               Add-ons
             </h3>
 
@@ -150,66 +207,41 @@ export default function PricingSection() {
                   <div className="flex-1">
                     <div className="mb-1 flex items-center justify-between gap-2">
                       <span className="font-semibold">{addOn.name}</span>
-                      <span className="text-sm text-accent">
-                        {addOn.pricingModel === "percentage"
-                          ? `+${addOn.price}%`
-                          : addOn.pricingModel === "starting"
-                          ? `From EGP ${addOn.price.toLocaleString()}`
-                          : `EGP ${addOn.price.toLocaleString()}`}
-                      </span>
+                      <span className="text-sm text-accent">{getAddOnDisplayValue(addOn)}</span>
                     </div>
                     <p className="text-xs text-text/60">{addOn.description}</p>
-                    {addOn.notes && (
-                      <p className="mt-1 text-xs text-text/40 italic">
-                        {addOn.notes}
-                      </p>
-                    )}
+                    {addOn.notes && <p className="mt-1 text-xs text-text/40 italic">{addOn.notes}</p>}
                   </div>
                 </label>
               ))}
             </div>
 
-            {/* Estimate Summary */}
             <div className="border-t border-white/10 pt-6">
               <div className="mb-4 space-y-2">
-                <div className="flex justify-between text-sm">
+                <div className="flex justify-between gap-4 text-sm">
                   <span className="text-text/60">Base Package:</span>
-                  <span>
-                    EGP{" "}
-                    {SITE_CONTENT.packages.find((p) => p.id === selectedPackage)?.price.toLocaleString()}
-                  </span>
+                  <span>EGP {selectedPackageData.price.toLocaleString()}</span>
                 </div>
-                {getSelectedAddOns().map((addOn) => (
-                  <div key={addOn.id} className="flex justify-between text-sm">
+                {selectedAddOnList.map((addOn) => (
+                  <div key={addOn.id} className="flex justify-between gap-4 text-sm">
                     <span className="text-text/60">{addOn.name}:</span>
-                    <span>
-                      {addOn.pricingModel === "percentage"
-                        ? `+${addOn.price}%`
-                        : addOn.pricingModel === "starting"
-                        ? `From EGP ${addOn.price.toLocaleString()}*`
-                        : `EGP ${addOn.price.toLocaleString()}`}
-                    </span>
+                    <span>{getAddOnDisplayValue(addOn)}</span>
                   </div>
                 ))}
               </div>
 
               <div className="mb-6 flex items-center justify-between border-t border-white/10 pt-4">
                 <span className="text-lg font-bold">Estimated Total:</span>
-                <span className="text-2xl font-bold text-accent">
-                  EGP {calculateTotal().toLocaleString()}
-                </span>
+                <span className="text-2xl font-bold text-accent">EGP {calculateTotal().toLocaleString()}</span>
               </div>
 
-              {getSelectedAddOns().some((a) => a.pricingModel === "starting") && (
+              {selectedAddOnList.some((addOn) => addOn.pricingModel === "starting") && (
                 <p className="mb-4 text-xs text-text/40">
-                  * Prices marked as &quot;From&quot; are indicative and require final confirmation based on scope.
+                  * Prices marked as “From” are indicative and require final confirmation based on scope.
                 </p>
               )}
 
-              <button
-                onClick={handleRequestEstimate}
-                className="hero-cta w-full justify-center"
-              >
+              <button type="button" onClick={handleRequestEstimate} className="hero-cta w-full justify-center">
                 <span>Request This Estimate</span>
                 <ArrowRight size={16} className="hero-cta-arrow" />
               </button>

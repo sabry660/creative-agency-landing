@@ -9,12 +9,11 @@ import SmoothScroll from "@/components/SmoothScroll";
 
 const ProjectShowcase = lazy(() => import("@/components/ProjectShowcase"));
 const MarqueeSection = lazy(() => import("@/components/MarqueeSection"));
-const VideoSection = lazy(() => import("@/components/VideoSection"));
 const ServicesSection = lazy(() => import("@/components/ServicesSection"));
 const PricingSection = lazy(() => import("@/components/PricingSection"));
-const TemplatesSection = lazy(() => import("@/components/TemplatesSection"));
 const ProcessSection = lazy(() => import("@/components/ProcessSection"));
 const FAQSection = lazy(() => import("@/components/FAQSection"));
+const PrivacyPolicySection = lazy(() => import("@/components/PrivacyPolicySection"));
 const ContactSection = lazy(() => import("@/components/ContactSection"));
 const Footer = lazy(() => import("@/components/Footer"));
 
@@ -59,10 +58,6 @@ export default function Home() {
             </Suspense>
 
             <Suspense fallback={<SectionFallback />}>
-              <VideoSection />
-            </Suspense>
-
-            <Suspense fallback={<SectionFallback />}>
               <ServicesSection />
             </Suspense>
 
@@ -71,15 +66,15 @@ export default function Home() {
             </Suspense>
 
             <Suspense fallback={<SectionFallback />}>
-              <TemplatesSection />
-            </Suspense>
-
-            <Suspense fallback={<SectionFallback />}>
               <ProcessSection />
             </Suspense>
 
             <Suspense fallback={<SectionFallback />}>
               <FAQSection />
+            </Suspense>
+
+            <Suspense fallback={<SectionFallback />}>
+              <PrivacyPolicySection />
             </Suspense>
 
             <Suspense fallback={<SectionFallback />}>

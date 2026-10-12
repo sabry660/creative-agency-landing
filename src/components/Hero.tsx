@@ -113,12 +113,13 @@ export default function Hero() {
         <div className="mb-8 md:mb-12">
           <button
             onClick={() => setLogoModalOpen(true)}
-            className="inline-block"
+            className="inline-flex h-24 w-24 items-center justify-center overflow-hidden rounded-full border border-white/10 bg-white/5 shadow-[0_0_30px_rgba(255,77,0,0.12)] ring-1 ring-white/10 transition-transform duration-300 hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent md:h-32 md:w-32"
+            aria-label="Open Montra logo"
           >
             <img
-              src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=400&q=80"
-              alt="Sabry Logo"
-              className="h-24 w-24 md:h-32 md:w-32 rounded-full object-cover transition-transform duration-300 hover:scale-125 cursor-pointer"
+              src="/logo.png"
+              alt="Montra Logo"
+              className="h-full w-full rounded-full object-cover object-center"
             />
           </button>
         </div>
@@ -146,8 +147,8 @@ export default function Hero() {
           {SITE_CONTENT.brand.hero.supportingText}
         </p>
 
-        <div className="flex justify-center">
-          <a ref={ctaRef} href="#work" className="hero-cta">
+        <div className="flex justify-center pt-2 md:pt-0">
+          <a ref={ctaRef} href="#contact" className="hero-cta mt-2 sm:mt-0">
             <span>{SITE_CONTENT.brand.hero.primaryCta}</span>
             <ArrowRight size={16} className="hero-cta-arrow" />
           </a>
@@ -169,9 +170,9 @@ export default function Hero() {
               <X size={32} />
             </button>
             <img
-              src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1200&q=80"
-              alt="Sabry Logo"
-              className="rounded-lg object-contain max-w-full max-h-[80vh]"
+              src="/logo.png"
+              alt="Montra Logo"
+              className="max-h-[80vh] max-w-full rounded-lg object-contain"
             />
           </div>
         </div>

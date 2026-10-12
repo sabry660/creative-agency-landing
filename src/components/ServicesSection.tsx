@@ -42,6 +42,7 @@ export default function ServicesSection() {
       ref={sectionRef}
       id="services"
       className="skew-section py-24 md:py-32 lg:py-40"
+      suppressHydrationWarning
     >
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="mb-16 text-center">
